@@ -1,9 +1,13 @@
 // 生成条数
-var max = 50;
+var max = 1000;
 // 文件生成路径
 
 var fs = require("fs");
 var path = require('path');
+const random = require('lodash/random')
+const sample = require('lodash/sample')
+const sampleSize = require('lodash/sampleSize')
+const { nanoid } = require('nanoid')
 var Mtils = require("./Mtils.amd.cmd.umd.js");
 
 // 获取邮箱
@@ -155,11 +159,35 @@ function generate() {
   while (index < max) {
     index++;
     index2++;
-    userInfo = getUserInfo();
-    output.push(userInfo)
+    u = getUserInfo();
+    let type = random(0, 3) //这里5种人
+    u.type = type
+    switch (type) {
+      case 0: //十分随便的人，喜欢用123456，woaini1314，5201314等
+        u.password = sample(['12345','123456','123456789'])
+        u.tags = sampleSize(['乐观','开朗','粗心','随和','幽默', '老实人'], random(2,4))
+        break;
+      case 1: //喜欢用生日作为密码
+        u.password = u.idcard.substring(8, 14)
+        u.tags = sampleSize(['自然','果断','勤劳能干','宽容','阳光', '厚道'], random(2,4))
+        break
+      case 2: //喜欢使用手机号+姓名，或者生日+姓名
+        if(random(0,1) > 0){
+          u.password = u.phone + u.username
+        }else{
+          u.password = u.idcard.substring(8, 14) + u.username
+        }
+        u.tags = sampleSize(['时尚','迟钝','励志','萌','内心冷', '伤感'], random(2,4))
+        break
+      case 3: //密码是随机的，看起来很安全，但是他全部网站都使用同一个密码，密码在其他网站被泄露过
+        u.password = nanoid(10)
+        u.tags = sampleSize(['孤独患者','理想主义','IT民工','机智','优雅', '搞笑'], random(2,4))
+        break
+      default:
+        console.error(`未匹配的类型：${type}`)
+    }
+    output.push(u)
   }
-
-
   return output
 }
 var start = new Date().getTime()
@@ -173,5 +201,17 @@ data = data.filter(item=>{ //上面的随机数算法有点问题，有些字段
   }
   return true
 })
+let pwDict = ''
+for(let u of data){
+  if(u.type == 3) pwDict +=`| ${u.username} | ${u.password} |\n`
+}
+pwDict = `# 密码字典
+2011年12月21日，互联网上传出开发者社区CXXN遭黑客攻击，600万用户帐号及明文密码泄露，用户资料被大量传播。下面是部分密码节选：
+
+| 用户名 | 密码 |
+| :-----| :---- |
+${pwDict}`
+
 fs.writeFileSync(path.join(__dirname, '../src/assets/data.json'),JSON.stringify(data))
+fs.writeFileSync(path.join(__dirname, '../public/info/pw-dict.md'),pwDict)
 console.log('数据生成完毕；耗时：' + (new Date().getTime() - start))
