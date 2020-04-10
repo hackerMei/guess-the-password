@@ -25,7 +25,7 @@ v-app(dark)
               div 邮箱：{{ user.email }}
               div 生日：{{ user.idcard.substring(6, 10)}}年{{ user.idcard.substring(10, 12)}}月{{ user.idcard.substring(12, 14)}}日
               div 手机：{{ user.phone }}
-              v-chip.mt-1.mr-2(v-for='t of user.tags', :color='colorHash(t)', dark) {{ t }}
+              v-chip.mt-1.mr-2(v-for='t of user.tags',:key='t', :color='colorHash(t)', dark) {{ t }}
   v-dialog(v-model='dialog', max-width="480", persistent)
     v-card.elevation-12
       v-toolbar(color='primary', dark, flat)
