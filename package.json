@@ -15,7 +15,7 @@
     "github-markdown-css": "^4.0.0",
     "lodash": "^4.17.15",
     "marked": "^0.8.2",
-    "nanoid": "^3.0.2",
+    "nanoid": "^3.1.31",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
     "vue-clipboard2": "^0.3.1",
